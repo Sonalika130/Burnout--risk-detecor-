@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Burnout Risk Detector</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --surface:   #12121a;
+      --card:      #1a1a26;
+      --border:    #2a2a3d;
+      --purple:    #7c3aed;
+      --purple-lt: #a855f7;
+      --glow:      #7c3aed44;
+      --text:      #e8e8f0;
+      --muted:     #6b6b8a;
+      --low:       #22c55e;
+      --medium:    #f59e0b;
+      --high:      #ef4444;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 500px; height: 500px;
+      background: var(--purple);
+      top: -100px; left: -100px;
+    }
+    body::after {
+      width: 400px; height: 400px;
+      background: #4f46e5;
+      bottom: -80px; right: -80px;
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 560px;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      animation: fadeDown 0.7s ease both;
+    }
+    .badge {
+      display: inline-block;
+      background: #7c3aed22;
+      border: 1px solid #7c3aed55;
+      color: var(--purple-lt);
+      font-family: 'Syne', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 6vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #e8e8f0 30%, var(--purple-lt));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.6rem;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 0.95rem;
+      font-weight: 300;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      animation: fadeUp 0.7s ease 0.1s both;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--purple-lt), transparent);
+      opacity: 0.5;
+    }
+
+    /* Form */
+    .form-grid {
+      display: grid;
+      gap: 1.2rem;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .field label span {
+      color: var(--purple-lt);
+      font-size: 0.75rem;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    .field input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .field input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 10px var(--glow);
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .field input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 18px var(--purple);
+    }
+
+    .range-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .range-row input[type="range"] { flex: 1; }
+    .range-val {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--purple-lt);
+      min-width: 2.5rem;
+      text-align: right;
+    }
+
+    .field input[type="number"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .field input[type="number"]:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+    .field input[type="number"]::-webkit-inner-spin-button { display: none; }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.4rem 0;
+    }
+
+    /* Submit */
+    .btn {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      background: linear-gradient(135deg, var(--purple), #4f46e5);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px #7c3aed55;
+    }
+    .btn:active { transform: translateY(0); }
+    .btn.loading { pointer-events: none; opacity: 0.7; }
+    .btn .btn-text { transition: opacity 0.2s; }
+    .btn .spinner {
+      display: none;
+      width: 18px; height: 18px;
+      border: 2px solid #ffffff44;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .btn.loading .btn-text { opacity: 0; }
+    .btn.loading .spinner { display: block; }
+
+    /* Result */
+    .result {
+      margin-top: 1.5rem;
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: none;
+      animation: fadeUp 0.4s ease both;
+      border: 1px solid;
+    }
+    .result.show { display: block; }
+    .result.Low    { background: #22c55e12; border-color: #22c55e44; }
+    .result.Medium { background: #f59e0b12; border-color: #f59e0b44; }
+    .result.High   { background: #ef444412; border-color: #ef444444; }
+
+    .result-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .result-risk {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .result.Low    .result-risk { color: var(--low); }
+    .result.Medium .result-risk { color: var(--medium); }
+    .result.High   .result-risk { color: var(--high); }
+
+    /* Probability bars */
+    .proba-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .bar-name {
+      font-size: 0.8rem;
+      width: 50px;
+      color: var(--text);
+    }
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+      width: 0%;
+    }
+    .bar-row.low  .bar-fill { background: var(--low); }
+    .bar-row.med  .bar-fill { background: var(--medium); }
+    .bar-row.high .bar-fill { background: var(--high); }
+    .bar-pct {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      width: 38px;
+      text-align: right;
+      color: var(--muted);
+    }
+
+    .error-box {
+      margin-top: 1rem;
+      background: #ef444415;
+      border: 1px solid #ef444444;
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      font-size: 0.85rem;
+      color: #f87171;
+      display: none;
+    }
+    .error-box.show { display: block; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      animation: fadeUp 0.7s ease 0.3s both;
+    }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin {
+      to { transform: translate(-50%,-50%) rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <div class="badge">AI-Powered Assessment</div>
+      <h1>Burnout Risk<br/>Detector</h1>
+      <p class="subtitle">Enter your daily metrics to assess your burnout risk level.</p>
+    </header>
+
+    <div class="card">
+      <div class="form-grid">
+
+        <!-- Sleep Hours -->
+        <div class="field">
+          <label>Sleep Hours <span>/ night</span></label>
+          <div class="range-row">
+            <input type="range" id="sleep_hours" min="0" max="12" step="0.5" value="7"
+                   oninput="document.getElementById('sleep_val').textContent=this.value"/>
+            <div class="range-val" id="sleep_val">7</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Stress Level -->
+        <div class="field">
+          <label>Stress Level <span>1 – 10</span></label>
+          <div class="range-row">
+            <input type="range" id="stress_level" min="1" max="10" step="1" value="5"
+                   oninput="document.getElementById('stress_val').textContent=this.value"/>
+            <div class="range-val" id="stress_val">5</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Workload Rating -->
+        <div class="field">
+          <label>Workload Rating <span>1 – 10</span></label>
+          <div class="range-row">
+            <input type="range" id="workload_rating" min="1" max="10" step="1" value="5"
+                   oninput="document.getElementById('workload_val').textContent=this.value"/>
+            <div class="range-val" id="workload_val">5</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Attendance -->
+        <div class="field">
+          <label>Attendance <span>%</span></label>
+          <div class="range-row">
+            <input type="range" id="attendance" min="0" max="100" step="1" value="80"
+                   oninput="document.getElementById('att_val').textContent=this.value+'%'"/>
+            <div class="range-val" id="att_val">80%</div>
+          </div>
+        </div>
+
+        <button class="btn" id="submitBtn" onclick="predict()">
+          <span class="btn-text">Analyse Risk</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+
+      <!-- Result -->
+      <div class="result" id="result">
+        <div class="result-label">Predicted Burnout Risk</div>
+        <div class="result-risk" id="riskLabel">—</div>
+        <div class="proba-label">Confidence Breakdown</div>
+        <div class="bar-row low">
+          <div class="bar-name">Low</div>
+          <div class="bar-track"><div class="bar-fill" id="bar-low"></div></div>
+          <div class="bar-pct" id="pct-low">0%</div>
+        </div>
+        <div class="bar-row med">
+          <div class="bar-name">Medium</div>
+          <div class="bar-track"><div class="bar-fill" id="bar-med"></div></div>
+          <div class="bar-pct" id="pct-med">0%</div>
+        </div>
+        <div class="bar-row high">
+          <div class="bar-name">High</div>
+          <div class="bar-track"><div class="bar-fill" id="bar-high"></div></div>
+          <div class="bar-pct" id="pct-high">0%</div>
+        </div>
+      </div>
+
+      <div class="error-box" id="errorBox"></div>
+    </div>
+
+    <footer>AI-Based Burnout Risk Detection System &nbsp;·&nbsp; Built with Flask + Logistic Regression</footer>
+  </div>
+
+  <script>
+    async function predict() {
+      const btn = document.getElementById('submitBtn');
+      const result = document.getElementById('result');
+      const errorBox = document.getElementById('errorBox');
+
+      btn.classList.add('loading');
+      result.classList.remove('show');
+      errorBox.classList.remove('show');
+
+      const payload = {
+        sleep_hours:     parseFloat(document.getElementById('sleep_hours').value),
+        stress_level:    parseFloat(document.getElementById('stress_level').value),
+        workload_rating: parseFloat(document.getElementById('workload_rating').value),
+        attendance:      parseFloat(document.getElementById('attendance').value)
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.error);
+
+        const risk = data.burnout_risk;
+        const proba = data.probabilities;
+
+        document.getElementById('riskLabel').textContent = risk + ' Risk';
+        result.className = 'result show ' + risk;
+
+        // Animate bars after a short delay
+        setTimeout(() => {
+          setBar('low',  proba.Low);
+          setBar('med',  proba.Medium);
+          setBar('high', proba.High);
+        }, 100);
+
+      } catch (err) {
+        errorBox.textContent = 'Error: ' + err.message;
+        errorBox.classList.add('show');
+      } finally {
+        btn.classList.remove('loading');
+      }
+    }
+
+    function setBar(id, pct) {
+      document.getElementById('bar-' + id).style.width = pct + '%';
+      document.getElementById('pct-' + id).textContent = pct + '%';
+    }
+  </script>
+</body>
+</html>
