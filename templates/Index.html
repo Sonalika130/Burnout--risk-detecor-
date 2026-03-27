@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -36,7 +37,6 @@
       overflow-x: hidden;
     }
 
-    /* Ambient background blobs */
     body::before, body::after {
       content: '';
       position: fixed;
@@ -64,7 +64,6 @@
       max-width: 560px;
     }
 
-    /* Header */
     header {
       text-align: center;
       margin-bottom: 2.5rem;
@@ -100,7 +99,6 @@
       font-weight: 300;
     }
 
-    /* Card */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -119,11 +117,7 @@
       opacity: 0.5;
     }
 
-    /* Form */
-    .form-grid {
-      display: grid;
-      gap: 1.2rem;
-    }
+    .form-grid { display: grid; gap: 1.2rem; }
 
     .field label {
       display: block;
@@ -181,32 +175,8 @@
       text-align: right;
     }
 
-    .field input[type="number"] {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 1rem;
-      padding: 0.75rem 1rem;
-      outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
-    }
-    .field input[type="number"]:focus {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px var(--glow);
-    }
-    .field input[type="number"]::-webkit-inner-spin-button { display: none; }
+    .divider { height: 1px; background: var(--border); margin: 0.4rem 0; }
 
-    /* Divider */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 0.4rem 0;
-    }
-
-    /* Submit */
     .btn {
       width: 100%;
       padding: 1rem;
@@ -224,10 +194,7 @@
       overflow: hidden;
       transition: transform 0.15s, box-shadow 0.15s;
     }
-    .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px #7c3aed55;
-    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px #7c3aed55; }
     .btn:active { transform: translateY(0); }
     .btn.loading { pointer-events: none; opacity: 0.7; }
     .btn .btn-text { transition: opacity 0.2s; }
@@ -245,7 +212,6 @@
     .btn.loading .btn-text { opacity: 0; }
     .btn.loading .spinner { display: block; }
 
-    /* Result */
     .result {
       margin-top: 1.5rem;
       border-radius: 14px;
@@ -259,66 +225,21 @@
     .result.Medium { background: #f59e0b12; border-color: #f59e0b44; }
     .result.High   { background: #ef444412; border-color: #ef444444; }
 
-    .result-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.4rem;
-    }
-    .result-risk {
-      font-family: 'Syne', sans-serif;
-      font-size: 2rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-    }
+    .result-label { font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+    .result-risk { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; margin-bottom: 1rem; }
     .result.Low    .result-risk { color: var(--low); }
     .result.Medium .result-risk { color: var(--medium); }
     .result.High   .result-risk { color: var(--high); }
 
-    /* Probability bars */
-    .proba-label {
-      font-size: 0.75rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.6rem;
-    }
-    .bar-row {
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      margin-bottom: 0.5rem;
-    }
-    .bar-name {
-      font-size: 0.8rem;
-      width: 50px;
-      color: var(--text);
-    }
-    .bar-track {
-      flex: 1;
-      height: 6px;
-      background: var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
-      width: 0%;
-    }
+    .proba-label { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6rem; }
+    .bar-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem; }
+    .bar-name { font-size: 0.8rem; width: 50px; color: var(--text); }
+    .bar-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); width: 0%; }
     .bar-row.low  .bar-fill { background: var(--low); }
     .bar-row.med  .bar-fill { background: var(--medium); }
     .bar-row.high .bar-fill { background: var(--high); }
-    .bar-pct {
-      font-family: 'Syne', sans-serif;
-      font-size: 0.8rem;
-      font-weight: 600;
-      width: 38px;
-      text-align: right;
-      color: var(--muted);
-    }
+    .bar-pct { font-family: 'Syne', sans-serif; font-size: 0.8rem; font-weight: 600; width: 38px; text-align: right; color: var(--muted); }
 
     .error-box {
       margin-top: 1rem;
@@ -332,26 +253,11 @@
     }
     .error-box.show { display: block; }
 
-    /* Footer */
-    footer {
-      text-align: center;
-      margin-top: 1.5rem;
-      font-size: 0.78rem;
-      color: var(--muted);
-      animation: fadeUp 0.7s ease 0.3s both;
-    }
+    footer { text-align: center; margin-top: 1.5rem; font-size: 0.78rem; color: var(--muted); animation: fadeUp 0.7s ease 0.3s both; }
 
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes spin {
-      to { transform: translate(-50%,-50%) rotate(360deg); }
-    }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -365,7 +271,17 @@
     <div class="card">
       <div class="form-grid">
 
-        <!-- Sleep Hours -->
+        <div class="field">
+          <label>Study Hours <span>/ day</span></label>
+          <div class="range-row">
+            <input type="range" id="study_hours" min="0" max="16" step="0.5" value="6"
+                   oninput="document.getElementById('study_val').textContent=this.value"/>
+            <div class="range-val" id="study_val">6</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
         <div class="field">
           <label>Sleep Hours <span>/ night</span></label>
           <div class="range-row">
@@ -377,7 +293,6 @@
 
         <div class="divider"></div>
 
-        <!-- Stress Level -->
         <div class="field">
           <label>Stress Level <span>1 – 10</span></label>
           <div class="range-row">
@@ -389,19 +304,17 @@
 
         <div class="divider"></div>
 
-        <!-- Workload Rating -->
         <div class="field">
-          <label>Workload Rating <span>1 – 10</span></label>
+          <label>Assignment Load <span>1 – 10</span></label>
           <div class="range-row">
-            <input type="range" id="workload_rating" min="1" max="10" step="1" value="5"
-                   oninput="document.getElementById('workload_val').textContent=this.value"/>
-            <div class="range-val" id="workload_val">5</div>
+            <input type="range" id="assignment_load" min="1" max="10" step="1" value="5"
+                   oninput="document.getElementById('assign_val').textContent=this.value"/>
+            <div class="range-val" id="assign_val">5</div>
           </div>
         </div>
 
         <div class="divider"></div>
 
-        <!-- Attendance -->
         <div class="field">
           <label>Attendance <span>%</span></label>
           <div class="range-row">
@@ -417,7 +330,6 @@
         </button>
       </div>
 
-      <!-- Result -->
       <div class="result" id="result">
         <div class="result-label">Predicted Burnout Risk</div>
         <div class="result-risk" id="riskLabel">—</div>
@@ -456,9 +368,10 @@
       errorBox.classList.remove('show');
 
       const payload = {
+        study_hours:     parseFloat(document.getElementById('study_hours').value),
         sleep_hours:     parseFloat(document.getElementById('sleep_hours').value),
         stress_level:    parseFloat(document.getElementById('stress_level').value),
-        workload_rating: parseFloat(document.getElementById('workload_rating').value),
+        assignment_load: parseFloat(document.getElementById('assignment_load').value),
         attendance:      parseFloat(document.getElementById('attendance').value)
       };
 
@@ -478,7 +391,6 @@
         document.getElementById('riskLabel').textContent = risk + ' Risk';
         result.className = 'result show ' + risk;
 
-        // Animate bars after a short delay
         setTimeout(() => {
           setBar('low',  proba.Low);
           setBar('med',  proba.Medium);
