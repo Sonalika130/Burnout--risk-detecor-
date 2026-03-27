@@ -29,12 +29,13 @@ def predict():
     try:
         data = request.get_json()
 
+        study_hours     = float(data['study_hours'])
         sleep_hours     = float(data['sleep_hours'])
         stress_level    = float(data['stress_level'])
-        workload_rating = float(data['workload_rating'])
+        assignment_load = float(data['assignment_load'])
         attendance      = float(data['attendance'])
 
-        features = np.array([[sleep_hours, stress_level, workload_rating, attendance]])
+        features = np.array([[study_hours, sleep_hours, stress_level, assignment_load, attendance]])
         prediction = model.predict(features)[0]
         proba = model.predict_proba(features)[0].tolist()
 
